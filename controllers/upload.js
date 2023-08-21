@@ -7,7 +7,17 @@ const bucket = new GridFSBucket(db, {
   bucketName: dbConfig.bucketName,
 });
 
-const getAllFiles = (req, res, next) => {};
+const getAllFiles = async (req, res, next) => {
+  try {
+    const files = await bucket.find().toArray();
+    if (files.length > 0) {
+      return res.status(200).json(files);
+    }
+    return res.status(200).json({ message: "No files uploaded" });
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
 
 const uploadFile = (req, res, next) => {
   var form = new formidable.IncomingForm();
