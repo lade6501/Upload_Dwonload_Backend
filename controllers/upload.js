@@ -2,6 +2,7 @@ var formidable = require("formidable");
 const dbConfig = require("../config/db");
 const GridFSBucket = require("mongodb").GridFSBucket;
 const fs = require("fs");
+const mongoose = require("mongoose");
 const db = dbConfig.mongoClient.db(dbConfig.database);
 const bucket = new GridFSBucket(db, {
   bucketName: dbConfig.bucketName,
@@ -51,4 +52,11 @@ const uploadFile = (req, res, next) => {
   });
 };
 
-module.exports = { getAllFiles, uploadFile };
+const deleteFile = async (req, res, next) => {
+  const { id } = req.params;
+  const obj_id = new mongoose.Types.ObjectId(id);
+  const file = await bucket.delete(obj_id);
+  console.log(file);
+  return res.status(200).json({ message: `${id}  deleted successfully` });
+};
+module.exports = { getAllFiles, uploadFile, deleteFile };
